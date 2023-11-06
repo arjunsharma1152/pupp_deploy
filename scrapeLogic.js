@@ -89,7 +89,7 @@ const scrapeLogic = async (res) => {
 
     res.send({
       status: "ok",
-      data: data});
+      data});
   } catch (e) {
     console.error(e);
     res.send(`Something went wrong while running Puppeteer: ${e}`);
