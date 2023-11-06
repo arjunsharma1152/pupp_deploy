@@ -85,11 +85,10 @@ const scrapeLogic = async (res) => {
         contests: codeforcesItems
     });
 
-    const data = JSON.stringify(fullData);
 
     res.send({
       status: "ok",
-      data});
+      data: fullData});
   } catch (e) {
     console.error(e);
     res.send(`Something went wrong while running Puppeteer: ${e}`);
