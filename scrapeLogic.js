@@ -90,6 +90,8 @@ const scrapeLogic = async (res) => {
 
     await Contest.create(JSON.parse(JSON.stringify(fullData)));
 
+    console.log("DATA LOADED")
+
     res.send({
       status: "ok",
       message: "Data Loaded",
