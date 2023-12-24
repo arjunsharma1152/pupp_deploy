@@ -1,8 +1,9 @@
 const puppeteer = require("puppeteer");
 require("dotenv").config();
+const Contest = require('./contestModel');
 
 const scrapeLogic = async (res) => {
-  const browser = await puppeteer.launch({
+  let browser = await puppeteer.launch({
     args: [
       "--disable-setuid-sandbox",
       "--no-sandbox",
@@ -18,12 +19,12 @@ const scrapeLogic = async (res) => {
     const page = await browser.newPage();
 
     await page.goto('https://www.codechef.com/contests?itm_medium=navmenu');
-    
+
     await page.setViewport({ width: 1080, height: 1024 });
 
     const codechefItems = [];
 
-    await page.waitForSelector("#root > div > div > div > div > div > div:nth-child(2) > div > div > div > table > tbody > tr > td:nth-child(2) > div > a > span",1200000);
+    await page.waitForSelector("#root > div > div > div > div > div > div:nth-child(2) > div > div > div > table > tbody > tr > td:nth-child(2) > div > a > span", 1200000);
 
     const codechefName = await page.evaluate(() => { return (Array.from(document.querySelectorAll('#root > div > div > div > div > div > div:nth-child(2) > div > div > div > table > tbody > tr > td:nth-child(2) > div > a > span')).map(x => x.textContent)) });
 
@@ -35,13 +36,13 @@ const scrapeLogic = async (res) => {
 
     for (let i = 0; i < codechefName.length; i++) {
 
-        const obj = {
-            name: codechefName[i],
-            date: codechefDate[i],
-            duration: codechefDuration[i],
-            startsIn: codechefStartsIn[i]
-        }
-        codechefItems.push(obj);
+      const obj = {
+        name: codechefName[i],
+        date: codechefDate[i],
+        duration: codechefDuration[i],
+        startsIn: codechefStartsIn[i]
+      }
+      codechefItems.push(obj);
     }
 
     // CODEFORCES
@@ -62,33 +63,38 @@ const scrapeLogic = async (res) => {
 
     await browser.close();
 
-    for (let i = 0; i < codechefName.length; i++) {
+    for (let i = 0; i < codeforcesName.length; i++) {
 
-        const obj = {
-            name: codeforcesName[i].replace(/\n/g, "").trim(),
-            date: codeforcesDate[i].replace(/\n/g, "").trim(),
-            duration: codeforcesDuration[i].replace(/\n/g, "").trim(),
-            startsIn: codeforcesStartsIn[i]
-        }
-        codeforcesItems.push(obj);
+      const obj = {
+        name: codeforcesName[i].replace(/\n/g, "").trim(),
+        date: codeforcesDate[i].replace(/\n/g, "").trim(),
+        duration: codeforcesDuration[i].replace(/\n/g, "").trim(),
+        startsIn: codeforcesStartsIn[i]
+      }
+      codeforcesItems.push(obj);
     }
 
     const fullData = [];
 
     fullData.push({
-        platform: "codechef",
-        contests: codechefItems
+      platform: "codechef",
+      contests: codechefItems
     });
 
-    fullData.push({
-        platform: "codeforces",
-        contests: codeforcesItems
-    });
+    // fullData.push({
+    //   platform: "codeforces",
+    //   contests: codeforcesItems
+    // });
 
+    await Contest.deleteMany();
+
+    await Contest.create(JSON.parse(JSON.stringify(fullData)));
 
     res.send({
       status: "ok",
-      data: fullData});
+      message: "Data Loaded",
+      data: fullData
+    });
   } catch (e) {
     console.error(e);
     res.send(`Something went wrong while running Puppeteer: ${e}`);
