@@ -18,12 +18,7 @@ app.get("/api/v1", (req, res) => {
   res.send("Render Puppeteer server is up and running!");
 });
 
-mongoose.connect('mongodb+srv://arjunsk923:ma8nsLywvNwUEYnl@cluster0.bpptzsd.mongodb.net/cpalert?retryWrites=true&w=majority', {
-  // useNewUrlParser: true,
-  // useCreateIndex: true,
-  // useFindAndModify: false,
-  // useUnifiedTopology: true
-}).then(() => console.log("DB connection successful")
+mongoose.connect('mongodb+srv://arjunsk923:ma8nsLywvNwUEYnl@cluster0.bpptzsd.mongodb.net/cpalert?retryWrites=true&w=majority').then(() => console.log("DB connection successful")
 );
 
 app.listen(PORT, () => {
